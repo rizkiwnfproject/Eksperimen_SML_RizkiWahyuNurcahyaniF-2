@@ -1,0 +1,39 @@
+name: Preprocessing Workflow
+
+on:
+  push:
+    paths:
+      - 'heart.csv'
+      - 'preprocessing/**'
+  workflow_dispatch:
+
+jobs:
+  preprocess:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install pandas scikit-learn
+
+      - name: Run preprocessing script
+        run: |
+          python Automate_RizkiWahyuNurcahyaniF.py heart.csv heart_preprocessed.csv
+
+      - name: Commit preprocessed dataset
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git status
+          ls -lah preprocessing/
+          git add preprocessing/heart_preprocessed.csv
+          git commit -m "Update preprocessed dataset" || echo "No changes to commit"
+          git push
